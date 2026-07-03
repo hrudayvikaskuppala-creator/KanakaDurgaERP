@@ -1,0 +1,9 @@
+{
+    "provider": "UPI QR",
+    "merchant_id": "",
+    "terminal_id": "",
+    "upi_id": "",
+    "api_key": "",
+    "auto_print": true,
+    "auto_whatsapp": true
+}
