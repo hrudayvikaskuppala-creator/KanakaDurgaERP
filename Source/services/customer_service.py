@@ -152,8 +152,26 @@ def update_customer(
 
 
 def delete_customer(customer_id):
+
     conn = get_connection()
     cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT customer_name
+        FROM customers
+        WHERE id=?
+        """,
+        (customer_id,)
+    )
+
+    customer = cursor.fetchone()
+
+    if customer and customer["customer_name"] == "Cash Customer (Walk-in)":
+        conn.close()
+        raise ValueError(
+            "Cash Customer (Walk-in) cannot be deleted."
+        )
 
     cursor.execute(
         "DELETE FROM customers WHERE id=?",
@@ -162,7 +180,6 @@ def delete_customer(customer_id):
 
     conn.commit()
     conn.close()
-
 
 def search_customer(keyword):
     conn = get_connection()

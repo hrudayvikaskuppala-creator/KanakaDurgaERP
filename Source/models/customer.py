@@ -21,9 +21,28 @@ def create_customer_table():
         created_date TEXT
     )
     """)
+    cursor.execute("""
+    INSERT OR IGNORE INTO customers
+    (
+        customer_name,
+        mobile,
+        whatsapp,
+        gst_number,
+        address
+    )
+    VALUES
+    (
+        'Cash Customer (Walk-in)',
+        '',
+        '',
+        '',
+        ''
+    )
+    """)
 
     conn.commit()
     conn.close()
+    
 
 
 def get_customer_names():

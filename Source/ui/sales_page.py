@@ -113,21 +113,65 @@ class SalesPage(ctk.CTkFrame):
         self.time_entry.grid(row=0, column=5)
         self.time_entry.insert(0, get_current_time())
 
+
         # ---------------- Row 2 ----------------
 
         ctk.CTkLabel(
             form,
-            text="Customer"
+            text="Customer Type"
         ).grid(row=1, column=0, padx=10)
+
+        self.customer_type = ctk.CTkOptionMenu(
+            form,
+            values=[
+                "Walk-in",
+                "Registered Customer"
+            ],
+            command=self.customer_type_changed
+        )
+
+        self.customer_type.grid(
+            row=1,
+            column=1,
+            padx=5
+        )
+
+        self.customer_type.set("Walk-in")
+
+
+        ctk.CTkLabel(
+            form,
+            text="Customer"
+        ).grid(row=1, column=2, padx=10)
 
         self.customer_combo = ctk.CTkComboBox(
             form,
             width=250,
             values=get_customer_names()
         )
-        self.customer_combo.grid(row=1, column=1)
-        self.customer_combo.set("")  # avoid CTk showing its own class name when values is empty
 
+        self.customer_combo.grid(row=1, column=3)
+
+        self.customer_combo.set("Cash Customer (Walk-in)")
+        self.customer_combo.configure(state="disabled")  # avoid CTk showing its own class name when values is empty
+
+        ctk.CTkButton(
+            form,
+            text="+ Customer",
+            width=110,
+            height=colors.BUTTON_HEIGHT,
+            corner_radius=colors.RADIUS_SM,
+            font=colors.FONT_BUTTON,
+            fg_color=colors.PRIMARY,
+            hover_color=colors.PRIMARY_HOVER,
+            command=self.open_customer_page
+        ).grid(
+            row=1,
+            column=4,
+            padx=(5, 10),
+            pady=5,
+            sticky="w"
+        )
         ctk.CTkLabel(
             form,
             text="Product"
@@ -142,7 +186,7 @@ class SalesPage(ctk.CTkFrame):
         self.product_combo.grid(row=1, column=3)
         self.product_combo.set("")  # avoid CTk showing its own class name when values is empty
 
-        # ---------------- Row 3 ----------------
+# ---------------- Row 3 ----------------
 
         ctk.CTkLabel(
             form,
@@ -155,9 +199,9 @@ class SalesPage(ctk.CTkFrame):
         )
         self.quantity_entry.grid(row=2, column=1)
         self.quantity_entry.bind(
-    "<KeyRelease>",
-    lambda e: self.calculate_total()
-)
+            "<KeyRelease>",
+            lambda e: self.calculate_total()
+        )
 
         ctk.CTkLabel(
             form,
@@ -170,9 +214,9 @@ class SalesPage(ctk.CTkFrame):
         )
         self.price_entry.grid(row=2, column=3)
         self.price_entry.bind(
-    "<KeyRelease>",
-    lambda e: self.calculate_total()
-)
+            "<KeyRelease>",
+            lambda e: self.calculate_total()
+        )
 
         # ---------------- Row 4 ----------------
 
@@ -188,9 +232,9 @@ class SalesPage(ctk.CTkFrame):
         self.gst_entry.insert(0, "18")
         self.gst_entry.grid(row=3, column=1)
         self.gst_entry.bind(
-    "<KeyRelease>",
-    lambda e: self.calculate_total()
-)
+            "<KeyRelease>",
+            lambda e: self.calculate_total()
+        )
 
         ctk.CTkLabel(
             form,
@@ -204,10 +248,9 @@ class SalesPage(ctk.CTkFrame):
         self.discount_entry.insert(0, "0")
         self.discount_entry.grid(row=3, column=3)
         self.discount_entry.bind(
-    "<KeyRelease>",
-    lambda e: self.calculate_total()
-)
-        
+            "<KeyRelease>",
+            lambda e: self.calculate_total()
+        )
 
         # ---------------- Row 5 ----------------
 
@@ -269,16 +312,16 @@ class SalesPage(ctk.CTkFrame):
         button_frame.pack(pady=15)
 
         ctk.CTkButton(
-    button_frame,
-    text="💾 Save Sale",
-    width=150,
-    height=colors.BUTTON_HEIGHT,
-    corner_radius=colors.RADIUS_SM,
-    font=colors.FONT_BUTTON,
-    fg_color=colors.SUCCESS,
-    hover_color=colors.SUCCESS_HOVER,
-    command=self.save_sale
-).grid(row=0, column=0, padx=5)
+            button_frame,
+            text="💾 Save Sale",
+            width=150,
+            height=colors.BUTTON_HEIGHT,
+            corner_radius=colors.RADIUS_SM,
+            font=colors.FONT_BUTTON,
+            fg_color=colors.SUCCESS,
+            hover_color=colors.SUCCESS_HOVER,
+            command=self.save_sale
+        ).grid(row=0, column=0, padx=5)
 
         ctk.CTkButton(
             button_frame,
@@ -293,16 +336,16 @@ class SalesPage(ctk.CTkFrame):
         ).grid(row=0, column=1, padx=5)
 
         ctk.CTkButton(
-    button_frame,
-    text="✖ Clear",
-    width=150,
-    height=colors.BUTTON_HEIGHT,
-    corner_radius=colors.RADIUS_SM,
-    font=colors.FONT_BUTTON,
-    fg_color=colors.SIDEBAR_BUTTON,
-    hover_color=colors.DANGER,
-    command=self.clear_form
-).grid(row=0, column=2, padx=5)
+            button_frame,
+            text="✖ Clear",
+            width=150,
+            height=colors.BUTTON_HEIGHT,
+            corner_radius=colors.RADIUS_SM,
+            font=colors.FONT_BUTTON,
+            fg_color=colors.SIDEBAR_BUTTON,
+            hover_color=colors.DANGER,
+            command=self.clear_form
+        ).grid(row=0, column=2, padx=5)
 
         # ---------------- Sales Table ----------------
 
@@ -339,7 +382,6 @@ class SalesPage(ctk.CTkFrame):
             fill="both",
             expand=True
         )
-
     def calculate_total(self):
         try:
             qty = float(self.quantity_entry.get() or 0)
@@ -357,7 +399,6 @@ class SalesPage(ctk.CTkFrame):
 
         except ValueError:
             self.total_entry.delete(0, "end")
-
 
     def clear_form(self):
 
@@ -393,6 +434,16 @@ class SalesPage(ctk.CTkFrame):
         self.barcode_entry.delete(0, "end")
         self.scan_status_label.configure(text="")
         self.barcode_entry.focus_set()
+
+    def open_customer_page(self):
+
+        from ui.customer_page import CustomerPage
+
+        window = ctk.CTkToplevel(self)
+        window.title("Customer Management")
+        window.geometry("1200x750")
+
+        CustomerPage(window) 
 
 
     def save_sale(self):
@@ -454,6 +505,17 @@ class SalesPage(ctk.CTkFrame):
                 "Error",
                 str(e)
             )
+
+    def customer_type_changed(self, value):
+
+        if value == "Walk-in":
+            self.customer_combo.set("Cash Customer (Walk-in)")
+            self.customer_combo.configure(state="disabled")
+
+        else:
+            self.customer_combo.configure(state="normal")
+            self.customer_combo.configure(values=get_customer_names())
+            self.customer_combo.set("")
 
     def _charge_via_pos(self, sale_data):
         """
@@ -679,8 +741,8 @@ class SalesPage(ctk.CTkFrame):
         receipt_text = self.build_receipt_text(sale)
 
         window = ctk.CTkToplevel(self)
-        window.title(f"Invoice Preview - {sale['invoice']}")
-        window.geometry("480x600")
+        window.title("Print Invoice")
+        window.geometry("1200x750")
         window.grab_set()
 
         textbox = ctk.CTkTextbox(
